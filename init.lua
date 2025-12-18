@@ -621,6 +621,15 @@ require('lazy').setup({
 
         pyright = {
           capabilities = capabilities,
+          settings = {
+            python = {
+              analysis = {
+                diagnosticSeverityOverrides = {
+                  reportUnusedImport = 'none',
+                },
+              },
+            },
+          },
           on_attach = function(client)
             -- Disable formatting: Ruff handles it
             client.server_capabilities.documentFormattingProvider = false
