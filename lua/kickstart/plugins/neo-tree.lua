@@ -18,6 +18,8 @@ return {
       window = {
         mappings = {
           ['\\'] = 'close_window',
+          ['l'] = 'none',
+          ['<cr>'] = 'none', -- Enter key
         },
       },
     },

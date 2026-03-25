@@ -43,7 +43,9 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
+--
 vim.o.signcolumn = 'yes'
+vim.opt.colorcolumn = '80'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -273,7 +275,7 @@ require('lazy').setup({
       spec = {
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>gh', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
   },
@@ -624,15 +626,7 @@ require('lazy').setup({
 
         basedpyright = {
           capabilities = capabilities,
-          settings = {
-            python = {
-              analysis = {
-                diagnosticSeverityOverrides = {
-                  reportUnusedImport = 'none',
-                },
-              },
-            },
-          },
+          settings = {},
           on_attach = function(client)
             -- Disable formatting: Ruff handles it
             client.server_capabilities.documentFormattingProvider = false
@@ -642,13 +636,7 @@ require('lazy').setup({
 
         ruff = {
           capabilities = capabilities,
-          init_options = {
-            settings = {
-              lint = {
-                ignore = { 'F401' },
-              },
-            },
-          },
+          init_options = {},
         },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -993,5 +981,5 @@ require('lazy').setup({
   },
 })
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- The line beneath this is called `modeline`. See `:help modeline` vim: ts=2
+-- sts=2 sw=2 et
