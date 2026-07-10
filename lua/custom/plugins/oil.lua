@@ -3,13 +3,6 @@ return {
     'stevearc/oil.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      CustomOilBar = function()
-        local path = vim.fn.expand '%'
-        path = path:gsub('oil://', '')
-
-        return '  ' .. vim.fn.fnamemodify(path, ':.')
-      end
-
       require('oil').setup {
         columns = { 'icon' },
         keymaps = {
@@ -19,9 +12,6 @@ return {
           ['<C-j>'] = false,
           ['<M-h>'] = 'actions.select_split',
         },
-        win_options = {
-          winbar = '%{v:lua.CustomOilBar()}',
-        },
         view_options = {
           show_hidden = true,
           is_always_hidden = function(name, _)
@@ -29,8 +19,16 @@ return {
             return vim.tbl_contains(folder_skip, name)
           end,
         },
+        lsp_file_methods = {
+          -- Enable or disable LSP file operations
+          enabled = true,
+          -- Time to wait for LSP file operations to complete before skipping
+          timeout_ms = 60000,
+          -- Set to true to autosave buffers that are updated with LSP willRenameFiles
+          -- Set to "unmodified" to only save unmodified buffers
+          autosave_changes = false,
+        },
       }
-
       -- Open parent directory in current window
       vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 

@@ -626,7 +626,15 @@ require('lazy').setup({
 
         basedpyright = {
           capabilities = capabilities,
-          settings = {},
+          settings = {
+            basedpyright = {
+              analysis = {
+                diagnosticMode = 'workspace',
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+              },
+            },
+          },
           on_attach = function(client)
             -- Disable formatting: Ruff handles it
             client.server_capabilities.documentFormattingProvider = false
