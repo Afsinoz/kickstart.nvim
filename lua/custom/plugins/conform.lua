@@ -21,7 +21,11 @@ return {
     formatters_by_ft = {
       lua = { 'stylua' },
       python = { 'isort', 'black' },
+      htmldjango = { 'djlint' },
+      jinja = { 'djlint' },
       jinja2 = { 'djlint' },
+      json = { 'fixjson' },
+      jsonc = { 'fixjson' },
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
     },
     -- Set default options
