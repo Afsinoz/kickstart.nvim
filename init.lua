@@ -609,6 +609,28 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      --
+      local function ruff_root(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        local repo = vim.fs.root(fname, { '.git' })
+        if not repo then
+          return on_dir(nil)
+        end
+        local backend = repo .. '/backend'
+        if vim.uv.fs_stat(backend .. '/pyproject.toml') then
+          return on_dir(backend)
+        end
+        on_dir(nil)
+      end
+
+      local py_extra_paths = {
+        'backend/dasense_backend',
+        'libs/dasense_opensearch',
+        'standalone/dasense_subscription',
+        'experiments',
+        'src',
+      }
+
       local servers = {
         -- clangd = {},
         gopls = {
@@ -626,17 +648,31 @@ require('lazy').setup({
 
         basedpyright = {
           capabilities = capabilities,
+          root_markers = { '.git' },
           settings = {
             basedpyright = {
               analysis = {
-                diagnosticMode = 'workspace',
+                diagnosticMode = 'openFilesOnly',
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
+                extraPaths = py_extra_paths,
+                exclude = {
+                  '**/.venv',
+                  '**/node_modules',
+                  '**/__pycache__',
+                  '**/.ruff_cache',
+                  '**/.pytest_cache',
+                  '**/htmlcov',
+                  '**/experiments',
+                },
               },
+            },
+            python = {
+              venvPath = '.',
+              pythonPath = '.venv/bin/python',
             },
           },
           on_attach = function(client)
-            -- Disable formatting: Ruff handles it
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
@@ -644,6 +680,7 @@ require('lazy').setup({
 
         ruff = {
           capabilities = capabilities,
+          root_dir = ruff_root,
           init_options = {},
         },
         -- rust_analyzer = {},
@@ -691,19 +728,14 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        automatic_enable = false,
       }
+
+      for server_name, server in pairs(servers) do
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        vim.lsp.config(server_name, server)
+        vim.lsp.enable(server_name)
+      end
     end,
   },
 
