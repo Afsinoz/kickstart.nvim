@@ -148,6 +148,28 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- [[ Custom Filetypes ]]
+vim.filetype.add {
+  extension = {
+    jinja = 'jinja',
+    jinja2 = 'jinja',
+    j2 = 'jinja',
+  },
+  pattern = {
+    -- Matches any filename ending in .json.j2 or .json.jinja
+    ['.*%.json%.j2'] = 'json',
+    ['.*%.json%.jinja'] = 'json',
+  },
+}
+-- Always use spaces (never tabs) for JSON/Jinja files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'json.jinja',
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+  end,
+})
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -610,18 +632,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       --
-      local function ruff_root(bufnr, on_dir)
-        local fname = vim.api.nvim_buf_get_name(bufnr)
-        local repo = vim.fs.root(fname, { '.git' })
-        if not repo then
-          return on_dir(nil)
-        end
-        local backend = repo .. '/backend'
-        if vim.uv.fs_stat(backend .. '/pyproject.toml') then
-          return on_dir(backend)
-        end
-        on_dir(nil)
-      end
 
       local py_extra_paths = {
         'backend/dasense_backend',
@@ -680,7 +690,6 @@ require('lazy').setup({
 
         ruff = {
           capabilities = capabilities,
-          root_dir = ruff_root,
           init_options = {},
         },
         -- rust_analyzer = {},
