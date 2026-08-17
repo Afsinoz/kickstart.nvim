@@ -11,6 +11,12 @@ vim.g.have_nerd_font = false
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
+--
+-- Use 4 spaces instead of tabs
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
 
 -- Make line numbers default
 vim.o.number = true
@@ -157,19 +163,11 @@ vim.filetype.add {
   },
   pattern = {
     -- Matches any filename ending in .json.j2 or .json.jinja
-    ['.*%.json%.j2'] = 'json',
-    ['.*%.json%.jinja'] = 'json',
+    ['.*%.json%.j2'] = 'jinja',
+    ['.*%.json%.jinja'] = 'jinja',
   },
 }
--- Always use spaces (never tabs) for JSON/Jinja files
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'json.jinja',
-  callback = function()
-    vim.opt_local.expandtab = true
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-  end,
-})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -763,7 +761,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -780,11 +778,20 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        htmldjango = { 'djlint' },
+        json = { 'fixjson' },
+        jsonc = { 'fixjson' },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      },
+      formatters = {
+        djlint = {
+          prepend_args = { '--preserve-blank-lines' },
+        },
       },
     },
   },
