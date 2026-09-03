@@ -656,7 +656,7 @@ require('lazy').setup({
 
         basedpyright = {
           capabilities = capabilities,
-          root_markers = { '.git' },
+          root_markers = { 'uv.lock', '.git' },
           settings = {
             basedpyright = {
               analysis = {
