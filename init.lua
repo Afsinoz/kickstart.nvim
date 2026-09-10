@@ -1,4 +1,4 @@
--- Set <space> as the leader key
+--src Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
@@ -632,6 +632,7 @@ require('lazy').setup({
       --
 
       local py_extra_paths = {
+        'dasense_backend',
         'backend/dasense_backend',
         'libs/dasense_opensearch',
         'standalone/dasense_subscription',
@@ -656,7 +657,7 @@ require('lazy').setup({
 
         basedpyright = {
           capabilities = capabilities,
-          root_markers = { 'uv.lock', '.git' },
+          root_markers = { 'uv.lock', '.git', 'pyproject.toml' },
           settings = {
             basedpyright = {
               analysis = {
